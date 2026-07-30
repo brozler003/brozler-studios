@@ -1,0 +1,38 @@
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.logoFloat {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes breathingBg {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+}
+
+.breathing-bg {
+  animation: breathingBg 6s ease-in-out infinite;
+}
