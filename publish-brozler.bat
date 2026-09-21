@@ -173,7 +173,11 @@ echo [6/7] Checking for changes...
 
 git diff --cached --quiet
 
-if errorlevel 0 (
+REM Git returns:
+REM 0 = no staged changes
+REM 1 = staged changes exist
+
+if not errorlevel 1 (
     echo.
     echo ==========================================
     echo          NO CHANGES TO PUBLISH
