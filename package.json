@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:open": "next dev",
-    "build": "next build",
+    "build": "node generate-projects.mjs && next build",
     "start": "next start",
     "lint": "eslint"
   },
