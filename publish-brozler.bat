@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 
-title Brozler Studios - Publish
+title Brozler Studios - Publisher
 
 cd /d "%~dp0"
 
@@ -11,7 +11,7 @@ echo        BROZLER STUDIOS PUBLISHER
 echo ==========================================
 echo.
 
-echo [1/6] Checking Git...
+echo [1/7] Checking Git...
 
 git --version >nul 2>&1
 
@@ -26,12 +26,32 @@ if errorlevel 1 (
 echo Git OK.
 echo.
 
-echo [2/6] Checking for local Next.js server...
+echo [2/7] Checking for local Next.js server...
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$pids = Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'node.exe' -and $_.CommandLine -match 'next[\\\/ ]+dev' } | Select-Object -ExpandProperty ProcessId; if ($pids) { Write-Host 'Stopping local Next.js development server...'; $pids | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2 } else { Write-Host 'No local Next.js development server found.' }"
 
 echo.
-echo [3/6] Building production version...
+echo [3/7] Optimizing videos...
+
+node optimize-videos.mjs
+
+if errorlevel 1 (
+    echo.
+    echo ==========================================
+    echo       VIDEO OPTIMIZATION FAILED
+    echo ==========================================
+    echo.
+    echo Your changes were NOT pushed to GitHub.
+    echo.
+    pause
+    exit /b 1
+)
+
+echo.
+echo Video optimization complete.
+echo.
+
+echo [4/7] Building production version...
 
 call npm run build
 
@@ -53,7 +73,7 @@ echo.
 echo Build successful.
 echo.
 
-echo [4/6] Staging changes...
+echo [5/7] Staging changes...
 
 git add .
 
@@ -68,7 +88,7 @@ if errorlevel 1 (
 echo Changes staged.
 echo.
 
-echo [5/6] Checking for changes...
+echo [6/7] Checking for changes...
 
 git diff --cached --quiet
 
@@ -103,7 +123,7 @@ echo.
 echo Commit created.
 echo.
 
-echo [6/6] Pushing to GitHub...
+echo [7/7] Pushing to GitHub...
 
 git push origin main
 
@@ -127,8 +147,8 @@ echo ==========================================
 echo.
 echo GitHub has been updated.
 echo.
-echo Vercel will now automatically build
-echo and deploy the new version.
+echo Vercel will automatically deploy
+echo the new version.
 echo.
 echo ==========================================
 echo.
