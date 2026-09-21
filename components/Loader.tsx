@@ -6,126 +6,185 @@ interface LoaderProps {
   show?: boolean;
 }
 
-export default function Loader({ show = true }: LoaderProps) {
+export default function Loader({
+  show = true,
+}: LoaderProps) {
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {show && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-md"
+          className="
+            fixed
+            inset-0
+            z-[9999]
+            flex
+            items-center
+            justify-center
+            overflow-hidden
+            bg-black
+          "
           initial={{ opacity: 1 }}
-          animate={{ opacity: show ? 1 : 0 }}
-          transition={{ duration: 1, ease: [0.22,1,0.36,1] }}
-          style={{ pointerEvents: show ? "auto" : "none" }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{
+            duration: 0.45,
+            ease: [0.22, 1, 0.36, 1],
+          }}
         >
-            <motion.div
-                initial={{
-                    scale : 1.6,
-                    opacity: 0,
-                }}
-                animate={{
-                    scale: 1,
-                    opacity: 0.18,
-                }}
-                transition={{
-                    duration: 1.8,
-                    ease: [0.22, 1, 0.36, 1],   
-                }}
-                className="
-                    absolute 
-                    h-72
-                    w-72
-                    rounded-full
-                    border
-                    border-red-500/40
-                    "
-            />
-            <motion.div
-                initial={{
-                    scale : 0.4,
-                    opacity: 0,
-                }}      
-                animate={{
-                    scale: 1,
-                    opacity: 0.1,
-                }}
-                transition={{
-                    duration: 1.8,
-                    ease: [0.22, 1, 0.36, 1],
-                }}
-                className="
-                    absolute 
-                    h-48
-                    w-48
-                    rounded-full
-                    border
-                    border-white/30
-                    "
-            />
+          {/* ==================================================
+              STATIC GLOW
+              
+              Important:
+              The glow itself is NOT animated.
+          ================================================== */}
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              h-[420px]
+              w-[420px]
+              rounded-full
+              bg-red-700/10
+              blur-[100px]
+            "
+          />
+
+          {/* ==================================================
+              OUTER RING
+          ================================================== */}
+
           <motion.div
             initial={{
-              filter: "blur(25px)",
               scale: 1.15,
               opacity: 0,
             }}
             animate={{
-              filter: "blur(0px)",
               scale: 1,
-              opacity: 1,
+              opacity: 0.18,
             }}
             transition={{
-              duration: 1.8,
+              duration: 0.9,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="text-center"
+            className="
+              pointer-events-none
+              absolute
+              h-64
+              w-64
+              rounded-full
+              border
+              border-red-500/40
+            "
+          />
+
+          {/* ==================================================
+              INNER RING
+          ================================================== */}
+
+          <motion.div
+            initial={{
+              scale: 0.7,
+              opacity: 0,
+            }}
+            animate={{
+              scale: 1,
+              opacity: 0.1,
+            }}
+            transition={{
+              duration: 0.9,
+              delay: 0.08,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="
+              pointer-events-none
+              absolute
+              h-44
+              w-44
+              rounded-full
+              border
+              border-white/20
+            "
+          />
+
+          {/* ==================================================
+              LOGO / WORDMARK
+              
+              No animated CSS blur.
+              Only opacity + transform.
+          ================================================== */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 1.08,
+              y: 8,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+            }}
+            transition={{
+              duration: 0.8,
+              delay: 0.05,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="
+              relative
+              z-10
+              text-center
+              will-change-transform
+            "
           >
             <motion.h1
-                initial={{
-                    filter: "blur(20px)",
-                    scale: 1.08,
-                    opacity: 0,
-                }}
-                animate={{
-                    filter: "blur(0px)",
-                    scale: 1,
-                    opacity: 1,
-                }}
-                transition={{
-                    duration: 1.6,
-                    ease: [0.22, 1, 0.36, 1],
-                }}
-                className="
-                    text-6xl
-                    md:text-8xl
-                    font-black
-                    tracking-[0.35em]
-                    uppercase
-                    text-white
-                    "
+              initial={{
+                opacity: 0,
+                scale: 1.04,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              transition={{
+                duration: 0.65,
+                delay: 0.12,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="
+                text-6xl
+                font-black
+                uppercase
+                tracking-[0.35em]
+                text-white
+                md:text-8xl
+              "
             >
               BROZLER
             </motion.h1>
 
             <motion.p
-                initial={{
-                    opacity: 0,
-                    y: 8,
-                }}
-                animate={{
-                    opacity: 1,
-                    y: 0,
-                }}
-                transition={{
-                    delay: 0.8,
-                    duration: 0.6,
-                }}
-                className="
-                    mt-5
-                    text-sm
-                    md:text-base
-                    tracking-[0.8em]
-                    uppercase
-                    text-red-500
-                    "
+              initial={{
+                opacity: 0,
+                y: 6,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.45,
+                delay: 0.35,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="
+                mt-5
+                text-sm
+                uppercase
+                tracking-[0.8em]
+                text-red-500
+                md:text-base
+              "
             >
               STUDIOS
             </motion.p>

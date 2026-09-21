@@ -1,61 +1,95 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import ScrollerArrow from "./ScrollerArrow";
 
 interface Props {
   children: ReactNode;
 }
 
-export default function HorizontalScroller({ children }: Props) {
+export default function HorizontalScroller({
+  children,
+}: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
 
-  const updateButton = () => {
-    if (!scrollRef.current) return;
+  // ============================================================
+  // UPDATE ARROW VISIBILITY
+  // ============================================================
 
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+  const updateButtons = useCallback(() => {
+    const container = scrollRef.current;
 
-    setShowLeft(scrollLeft > 10);
-    setShowRight(scrollLeft + clientWidth < scrollWidth - 10);
-  };
+    if (!container) return;
 
-  const scroll = (direction: "left" | "right") => {
-    if (!scrollRef.current) return;
+    const maxScrollLeft =
+      container.scrollWidth - container.clientWidth;
 
-    const firstCard = scrollRef.current.querySelector(
-      "[data-card]"
-    ) as HTMLElement | null;
+    const currentScroll = container.scrollLeft;
 
-    const amount = firstCard?.offsetWidth
-      ? firstCard.offsetWidth + 24 // gap-6 = 24px
-      : scrollRef.current.clientWidth * 0.9;
-
-    scrollRef.current.scrollBy({
-      left: direction === "right" ? amount : -amount,
-      behavior: "smooth",
-    });
-
-    requestAnimationFrame(() => {
-      setTimeout(updateButton, 350);
-    });
-  };
-
-  useEffect(() => {
-    updateButton();
-
-    window.addEventListener("resize", updateButton);
-
-    return () => {
-      window.removeEventListener("resize", updateButton);
-    };
+    setShowLeft(currentScroll > 8);
+    setShowRight(currentScroll < maxScrollLeft - 8);
   }, []);
 
+  // ============================================================
+  // ARROW SCROLL
+  // ============================================================
+
+  const scroll = useCallback(
+    (direction: "left" | "right") => {
+      const container = scrollRef.current;
+
+      if (!container) return;
+
+      const firstCard = container.querySelector(
+        "[data-card]"
+      ) as HTMLElement | null;
+
+      const amount = firstCard
+        ? firstCard.offsetWidth + 24
+        : container.clientWidth * 0.9;
+
+      container.scrollBy({
+        left: direction === "right" ? amount : -amount,
+        behavior: "smooth",
+      });
+    },
+    []
+  );
+
+  // ============================================================
+  // OBSERVE SIZE CHANGES
+  // ============================================================
+
+  useEffect(() => {
+    const container = scrollRef.current;
+
+    if (!container) return;
+
+    updateButtons();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateButtons();
+    });
+
+    resizeObserver.observe(container);
+
+    window.addEventListener("resize", updateButtons);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateButtons);
+    };
+  }, [updateButtons]);
+
   return (
-    <div className="relative group">
-      {/* Left Gradient */}
+    <div className="group relative w-full">
+      {/* ======================================================
+          LEFT GRADIENT
+      ====================================================== */}
+
       {showLeft && (
         <div
           className="
@@ -63,7 +97,7 @@ export default function HorizontalScroller({ children }: Props) {
             absolute
             left-0
             top-0
-            z-10
+            z-20
             h-full
             w-28
             bg-gradient-to-r
@@ -77,7 +111,10 @@ export default function HorizontalScroller({ children }: Props) {
         />
       )}
 
-      {/* Right Gradient */}
+      {/* ======================================================
+          RIGHT GRADIENT
+      ====================================================== */}
+
       {showRight && (
         <div
           className="
@@ -85,7 +122,7 @@ export default function HorizontalScroller({ children }: Props) {
             absolute
             right-0
             top-0
-            z-10
+            z-20
             h-full
             w-28
             bg-gradient-to-l
@@ -99,7 +136,10 @@ export default function HorizontalScroller({ children }: Props) {
         />
       )}
 
-      {/* Left Arrow */}
+      {/* ======================================================
+          LEFT ARROW
+      ====================================================== */}
+
       {showLeft && (
         <ScrollerArrow
           direction="left"
@@ -107,7 +147,10 @@ export default function HorizontalScroller({ children }: Props) {
         />
       )}
 
-      {/* Right Arrow */}
+      {/* ======================================================
+          RIGHT ARROW
+      ====================================================== */}
+
       {showRight && (
         <ScrollerArrow
           direction="right"
@@ -115,18 +158,32 @@ export default function HorizontalScroller({ children }: Props) {
         />
       )}
 
-      {/* Scroll Container */}
+      {/* ======================================================
+          HORIZONTAL SCROLL AREA
+          
+          Important:
+          - No scroll-smooth here.
+          - Arrow buttons control their own smooth behavior.
+          - Native touch/trackpad scrolling remains smooth.
+          - Scrollbar is completely hidden.
+      ====================================================== */}
+
       <div
         ref={scrollRef}
-        onScroll={updateButton}
+        onScroll={updateButtons}
         className="
           flex
+          w-full
           gap-6
           overflow-x-auto
-          scroll-smooth
+          overflow-y-hidden
           snap-x
+          snap-mandatory
+          overscroll-x-contain
+          touch-pan-x
           pb-4
-          scrollbar-hide
+          [scrollbar-width:none]
+          [&::-webkit-scrollbar]:hidden
         "
       >
         {children}

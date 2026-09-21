@@ -3,47 +3,76 @@
 export default function BackgroundEffects() {
   return (
     <>
-      {/* Base Background */}
-      <div className="fixed inset-0 -z-50 bg-black" />
+      {/* ==================================================
+          BASE BACKGROUND
+      ================================================== */}
 
-      {/* Red Glow - Top Left */}
       <div
         className="
           fixed
-          -top-40
-          -left-40
-          -z-40
-          h-[700px]
-          w-[700px]
-          rounded-full
-          bg-red-700/15
-          blur-[180px]
+          inset-0
+          -z-50
+          bg-black
         "
       />
 
-      {/* Red Glow - Bottom Right */}
+      {/* ==================================================
+          TOP LEFT RED GLOW
+
+          Smaller blur radius + opacity.
+          Still gives the same cinematic atmosphere
+          without requiring an enormous blur surface.
+      ================================================== */}
+
       <div
         className="
+          pointer-events-none
           fixed
-          -bottom-40
-          -right-40
+          -left-48
+          -top-48
           -z-40
-          h-[700px]
-          w-[700px]
+          h-[600px]
+          w-[600px]
           rounded-full
-          bg-red-600/10
-          blur-[220px]
+          bg-red-700/10
+          blur-[120px]
+          transform-gpu
         "
       />
 
-      {/* Vignette */}
+      {/* ==================================================
+          BOTTOM RIGHT RED GLOW
+      ================================================== */}
+
+      <div
+        className="
+          pointer-events-none
+          fixed
+          -bottom-48
+          -right-48
+          -z-40
+          h-[600px]
+          w-[600px]
+          rounded-full
+          bg-red-600/8
+          blur-[140px]
+          transform-gpu
+        "
+      />
+
+      {/* ==================================================
+          VIGNETTE
+
+          CSS gradient instead of another blur/filter.
+      ================================================== */}
+
       <div
         className="
           pointer-events-none
           fixed
           inset-0
           -z-30
-          bg-[radial-gradient(circle,transparent_40%,rgba(0,0,0,0.75)_100%)]
+          bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.72)_100%)]
         "
       />
     </>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import HorizontalScroller from "./HorizontalScroller";
 import VideoCard from "./VideoCard";
 import VideoModal from "./VideoModal";
-import { motion} from "framer-motion";
+import { motion } from "framer-motion";
 import { Project } from "@/types/project";
 
 interface Props {
@@ -22,59 +22,141 @@ export default function ProjectSection({
   const [selected, setSelected] = useState<Project | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     fetch(endpoint)
-      .then((res) => res.json())
-      .then(setProjects);
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to load ${endpoint}`);
+        }
+
+        return res.json();
+      })
+      .then((data) => {
+        if (!cancelled) {
+          setProjects(data);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+
+        if (!cancelled) {
+          setProjects([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [endpoint]);
 
   return (
     <>
-        <motion.section
-            className="mb-24"
-            initial={{ 
-                opacity: 0,
-                y: 50,
-                filter: "blur(8px)",
-            }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1 ] }}
-        >
-           <div className="mb-10 flex items-end justify-between">
-                <h2 className="text-3xl font-bold tracking-tight text-red-500">
-                    {title}
-                </h2>
+      <motion.section
+        className="
+          mb-24
+          contain-layout
+          [content-visibility:auto]
+          [contain-intrinsic-size:0_500px]
+        "
 
-                <p className="mt-2 text-zinc-500">
-                    {subtitle}
-                </p>
+        initial={{
+          opacity: 0,
+          y: 32,
+        }}
 
-                <div className="text-right">
-                    <p className="text-s uppercase tracking-[0.3em] text-zinc-500">
-                        Projects
-                    </p>
-                    <p className="text-3xl font-bold text-white">
-                        {projects.length}
-                    </p>
-                </div>
-            </div>
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
 
-            <HorizontalScroller>
-                {projects.map((project, index) => (
-                    <VideoCard
-                        key={project.id}
-                        project={project}
-                        index={index}
-                        onClick={() => setSelected(project)}
-                    />
-                ))}
-            </HorizontalScroller>
-        </motion.section>
+        viewport={{
+          once: true,
+          amount: 0.08,
+          margin: "0px 0px -10% 0px",
+        }}
 
-        <VideoModal
-            project={selected}
-            onClose={() => setSelected(null)}
-        />
-    </> 
+        transition={{
+          duration: 0.5,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+      >
+        {/* ==================================================
+            SECTION HEADER
+        ================================================== */}
+
+        <div className="mb-10 flex items-end justify-between">
+          <div>
+            <h2
+              className="
+                text-3xl
+                font-bold
+                tracking-tight
+                text-red-500
+              "
+            >
+              {title}
+            </h2>
+
+            {subtitle && (
+              <p className="mt-2 text-zinc-500">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {/* ==================================================
+              PROJECT COUNT
+          ================================================== */}
+
+          <div className="text-right">
+            <p
+              className="
+                text-xs
+                uppercase
+                tracking-[0.3em]
+                text-zinc-500
+              "
+            >
+              Projects
+            </p>
+
+            <p
+              className="
+                text-3xl
+                font-bold
+                text-white
+              "
+            >
+              {projects.length}
+            </p>
+          </div>
+        </div>
+
+        {/* ==================================================
+            PROJECTS
+        ================================================== */}
+
+        <HorizontalScroller>
+          {projects.map((project, index) => (
+            <VideoCard
+              key={project.id}
+              project={project}
+              index={index}
+              onClick={() => setSelected(project)}
+            />
+          ))}
+        </HorizontalScroller>
+      </motion.section>
+
+      {/* ====================================================
+          VIDEO MODAL
+      ==================================================== */}
+
+      <VideoModal
+        project={selected}
+        onClose={() => setSelected(null)}
+      />
+    </>
   );
 }
