@@ -129,12 +129,12 @@ echo Build successful.
 echo.
 
 REM ============================================================
-REM STAGE CHANGES
+REM STAGE ALL CHANGES INCLUDING DELETIONS
 REM ============================================================
 
-echo [5/7] Staging changes...
+echo [5/7] Staging all changes...
 
-git add .
+git add -A
 
 if errorlevel 1 (
     echo.
@@ -148,6 +148,21 @@ if errorlevel 1 (
 )
 
 echo Changes staged.
+echo.
+
+REM ============================================================
+REM SHOW EXACT CHANGES
+REM ============================================================
+
+echo ==========================================
+echo        CHANGES TO BE PUBLISHED
+echo ==========================================
+echo.
+
+git status --short
+
+echo.
+echo ==========================================
 echo.
 
 REM ============================================================

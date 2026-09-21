@@ -24,7 +24,9 @@ export default function ProjectSection({
   useEffect(() => {
     let cancelled = false;
 
-    fetch(endpoint)
+    fetch(endpoint, {
+      cache: "no-store",
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Failed to load ${endpoint}`);
@@ -59,32 +61,24 @@ export default function ProjectSection({
           [content-visibility:auto]
           [contain-intrinsic-size:0_500px]
         "
-
         initial={{
           opacity: 0,
           y: 32,
         }}
-
         whileInView={{
           opacity: 1,
           y: 0,
         }}
-
         viewport={{
           once: true,
           amount: 0.08,
           margin: "0px 0px -10% 0px",
         }}
-
         transition={{
           duration: 0.5,
           ease: [0.22, 1, 0.36, 1],
         }}
       >
-        {/* ==================================================
-            SECTION HEADER
-        ================================================== */}
-
         <div className="mb-10 flex items-end justify-between">
           <div>
             <h2
@@ -104,10 +98,6 @@ export default function ProjectSection({
               </p>
             )}
           </div>
-
-          {/* ==================================================
-              PROJECT COUNT
-          ================================================== */}
 
           <div className="text-right">
             <p
@@ -133,10 +123,6 @@ export default function ProjectSection({
           </div>
         </div>
 
-        {/* ==================================================
-            PROJECTS
-        ================================================== */}
-
         <HorizontalScroller>
           {projects.map((project, index) => (
             <VideoCard
@@ -148,10 +134,6 @@ export default function ProjectSection({
           ))}
         </HorizontalScroller>
       </motion.section>
-
-      {/* ====================================================
-          VIDEO MODAL
-      ==================================================== */}
 
       <VideoModal
         project={selected}
